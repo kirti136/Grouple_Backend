@@ -1,0 +1,12 @@
+npx sequelize-cli model:generate --name Booking --attributes userId:integer,date:date,status:string
+
+npx sequelize-cli migration:generate --name filename
+npx sequelize-cli db:migrate:undo
+npx sequelize-cli db:migrate 
+npx sequelize-cli db:migrate --to filename
+npx sequelize-cli db:migrate:undo:all --to filename
+
+
+npx sequelize-cli seed:generate --name filename   
+npx sequelize-cli db:seed:all
+npx sequelize-cli seed:generate --name filename

@@ -20,7 +20,7 @@ router.post(
 router.post("/login", loginValidationRules(), validate, userController.login);
 
 // Logout route
-router.post("/logout", userController.logout);
+router.post("/logout", verifyToken, userController.logout);
 
 // Get all users route
 router.get("/", verifyToken, userController.getAllUsers);
