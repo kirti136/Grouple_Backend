@@ -11,7 +11,7 @@ exports.register = async (req, res) => {
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
-        isError: true,
+        success: true,
         message: "User with this email already exists",
       });
     }
@@ -28,14 +28,14 @@ exports.register = async (req, res) => {
     });
 
     res.status(201).json({
-      isError: false,
+      success: false,
       message: "User registered successfully",
       user: newUser,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      isError: true,
+      success: true,
       message: "Internal Server Error",
     });
   }
@@ -48,7 +48,7 @@ exports.login = async (req, res) => {
     // Check if the user exists
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(400).json({ isError: true, message: "User not found" });
+      return res.status(400).json({ success: true, message: "User not found" });
     }
 
     // Validate password
@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
     if (!isValidPassword) {
       return res
         .status(400)
-        .json({ isError: true, message: "Invalid password" });
+        .json({ success: true, message: "Invalid password" });
     }
 
     // Generate JWT token
@@ -73,13 +73,13 @@ exports.login = async (req, res) => {
     res.cookie("token", prefixedToken, { httpOnly: true, maxAge: 3600000 });
 
     res.status(200).json({
-      isError: false,
+      success: false,
       message: "Logged in successfully",
       token: prefixedToken,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ isError: true, message: "Internal Server Error" });
+    res.status(500).json({ success: true, message: "Internal Server Error" });
   }
 };
 
@@ -88,12 +88,12 @@ exports.logout = (req, res) => {
     res.clearCookie("token");
 
     res.status(200).json({
-      isError: false,
+      success: false,
       message: "Logged out successfully",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ isError: true, message: "Internal Server Error" });
+    res.status(500).json({ success: true, message: "Internal Server Error" });
   }
 };
 
@@ -103,6 +103,6 @@ exports.getAllUsers = async (req, res) => {
     res.status(200).json({ data: users });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ isError: true, message: "Internal Server Error" });
+    res.status(500).json({ success: true, message: "Internal Server Error" });
   }
 };
