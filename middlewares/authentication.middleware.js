@@ -6,14 +6,14 @@ const verifyToken = (req, res, next) => {
 
   if (!authHeader) {
     return res.status(403).json({
-      isError: true,
-      message: "User needs to be logged in. Token is missing.",
+      success: false,
+      message: "Access denied. Unauthorized user.",
     });
   }
 
   if (!authHeader.startsWith("Bearer ")) {
     return res.status(403).json({
-      isError: true,
+      success: true,
       message: "Invalid token format. Format should be 'Bearer <token>'.",
     });
   }
@@ -28,21 +28,21 @@ const verifyToken = (req, res, next) => {
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({
-        isError: true,
+        success: true,
         message: "Session timed out. Please login again.",
       });
     }
 
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({
-        isError: true,
+        success: true,
         message: "Invalid token.",
       });
     }
 
     console.error("JWT Verification Error:", error);
     return res.status(500).json({
-      isError: true,
+      success: true,
       message: "Internal server error.",
     });
   }

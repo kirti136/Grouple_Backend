@@ -16,7 +16,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/user", routes.userRouter);
+app.use("/api/user", routes.userRouter);
+app.use("/api/booking", routes.bookingRouter);
 
 app.get("/", (req, res) => {
   res.send("WELCOME TO GROUPLE");
