@@ -23,31 +23,31 @@ app.get("/", (req, res) => {
 });
 
 // Check if the database is sync with provided models
-sequelize
-  .sync({ force: false })
-  .then(() => {
-    console.log("Database synced successfully");
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Error syncing database:", err);
-  });
-
-// Check if the database is connected
 // sequelize
-//   .authenticate()
+//   .sync({ force: false })
 //   .then(() => {
-//     console.log("Database connected.");
+//     console.log("Database synced successfully");
+//     app.listen(PORT, () => {
+//       console.log(`Server is running on port ${PORT}`);
+//     });
 //   })
-//   .catch((error) => {
-//     console.error("Unable to connect to the database:", error);
+//   .catch((err) => {
+//     console.error("Error syncing database:", err);
 //   });
 
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
+// Check if the database is connected
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Database connected.");
+  })
+  .catch((error) => {
+    console.error("Unable to connect to the database:", error);
+  });
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 module.exports = app;
 
