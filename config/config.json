@@ -15,10 +15,12 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "admin",
+    "password": "Sparsh54321",
+    "database": "booking_system",
+    "host": "database-1.cxo4qk66cvdm.eu-north-1.rds.amazonaws.com",
+    "dialect": "mysql",
+    "port": "3306",
+    "timezone": "+05:30"
   }
 }
