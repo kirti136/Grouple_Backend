@@ -23,32 +23,19 @@ app.get("/", (req, res) => {
   res.send("WELCOME TO GROUPLE");
 });
 
-// Check if the database is sync with provided models
-// sequelize
-//   .sync({ force: false })
-//   .then(() => {
-//     console.log("Database synced successfully");
-//     app.listen(PORT, () => {
-//       console.log(`Server is running on port ${PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error("Error syncing database:", err);
-//   });
-
 // Check if the database is connected
 sequelize
+  //   .sync({ force: false })
   .authenticate()
   .then(() => {
     console.log("Database connected.");
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
   })
   .catch((error) => {
     console.error("Unable to connect to the database:", error);
   });
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
 module.exports = app;
 
