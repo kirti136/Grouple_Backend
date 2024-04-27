@@ -5,13 +5,13 @@ const { User } = require("../models");
 
 exports.register = async (req, res) => {
   try {
-    const { username, email, password, profilePicture } = req.body;
+    const { username, email, password } = req.body;
 
     // Check if the user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({
-        success: true,
+        success: false,
         message: "User with this email already exists",
       });
     }
@@ -24,18 +24,17 @@ exports.register = async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      profilePicture,
     });
 
     res.status(201).json({
-      success: false,
+      success: true,
       message: "User registered successfully",
       user: newUser,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      success: true,
+      success: false,
       message: "Internal Server Error",
     });
   }
