@@ -9,28 +9,6 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
 
-    // Method to create user data
-    static async createUser(userData) {
-      try {
-        const user = await User.create(userData);
-        return user;
-      } catch (error) {
-        throw new Error("Error creating user");
-      }
-    }
-
-    // Method to update user data
-    static async updateUser(userId, newData) {
-      try {
-        const user = await User.findByPk(userId);
-        if (!user) throw new Error("User not found");
-        await user.update(newData);
-        return user;
-      } catch (error) {
-        throw new Error("Error updating user");
-      }
-    }
-
     // Method to get all users
     static async getUsers() {
       try {
