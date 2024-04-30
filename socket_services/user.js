@@ -1,5 +1,7 @@
+require("dotenv").config();
 const { User } = require("../models");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
 const schema = Joi.object({
@@ -19,7 +21,7 @@ module.exports = function (io) {
     // Send initial data when requested
     socket.on("requestAllUsers", async () => {
       try {
-        const allUsers = await User.getUsers();
+        const allUsers = await User.findAll();
         socket.emit("allUsers", allUsers);
       } catch (error) {
         socket.emit("usersFetchError", { error: error.message });
@@ -28,12 +30,20 @@ module.exports = function (io) {
 
     // Create User
     socket.on("formData", async (userData) => {
-      const { error, value } = schema.validate(userData);
+      const { error } = schema.validate(userData);
       if (error) {
         socket.emit("validationError", error.details[0].message);
       } else {
         try {
           const { username, email, password } = userData;
+
+          // Check if the username already exists
+          const existingUsername = await User.findOne({ where: { username } });
+          if (existingUsername) {
+            return socket.emit("userCreationError", {
+              error: "Username already exists",
+            });
+          }
 
           // Check if the user already exists
           const existingUser = await User.findOne({ where: { email } });
@@ -58,11 +68,47 @@ module.exports = function (io) {
             message: "User created successfully",
           });
         } catch (error) {
-          socket.emit("userCreationError", { error: error.message });
+          socket.emit("userCreationError", { error: error });
         }
       }
     });
 
+    // Login User
+    socket.on("loginData", async (loginData) => {
+      const { email, password } = loginData;
+
+      // Check if the user exists
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return socket.emit("loginError", {
+          error: "User not found",
+        });
+      }
+
+      // Validate password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return socket.emit("loginError", {
+          error: "Invalid password",
+        });
+      }
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET_KEY,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      socket.emit("loginSuccess", {
+        message: "Logged in successfully",
+        token: "Bearer " + token,
+      });
+    });
+
+    // Disconnect
     socket.on("disconnect", () => {
       console.log("Socket Disconnected", socket.id);
     });
