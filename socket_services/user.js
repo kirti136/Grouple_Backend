@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 
-const schema = Joi.object({
+const userSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
   email: Joi.string().email().required(),
   password: Joi.string()
@@ -29,47 +29,48 @@ module.exports = function (io) {
     });
 
     // Create User
-    socket.on("formData", async (userData) => {
-      const { error } = schema.validate(userData);
-      if (error) {
-        socket.emit("validationError", error.details[0].message);
-      } else {
-        try {
-          const { username, email, password } = userData;
-
-          // Check if the username already exists
-          const existingUsername = await User.findOne({ where: { username } });
-          if (existingUsername) {
-            return socket.emit("userCreationError", {
-              error: "Username already exists",
-            });
-          }
-
-          // Check if the user already exists
-          const existingUser = await User.findOne({ where: { email } });
-          if (existingUser) {
-            return socket.emit("userCreationError", {
-              error: "User with this email already exists",
-            });
-          }
-
-          // Hash the password
-          const hashedPassword = await bcrypt.hash(password, 10);
-
-          // Create a new user
-          const newUser = await User.create({
-            username,
-            email,
-            password: hashedPassword,
-          });
-
-          socket.emit("userCreated", {
-            user: newUser,
-            message: "User created successfully",
-          });
-        } catch (error) {
-          socket.emit("userCreationError", { error: error });
+    socket.on("registerUser", async (userData) => {
+      try {
+        const { error } = userSchema.validate(userData);
+        if (error) {
+          socket.emit("validationError", error.details[0].message);
+          return;
         }
+
+        const { username, email, password } = userData;
+
+        // Check if the username already exists
+        const existingUsername = await User.findOne({ where: { username } });
+        if (existingUsername) {
+          return socket.emit("userCreationError", {
+            error: "Username already exists",
+          });
+        }
+
+        // Check if the user already exists
+        const existingUser = await User.findOne({ where: { email } });
+        if (existingUser) {
+          return socket.emit("userCreationError", {
+            error: "User with this email already exists",
+          });
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create a new user
+        const newUser = await User.create({
+          username,
+          email,
+          password: hashedPassword,
+        });
+
+        socket.emit("userCreated", {
+          user: newUser,
+          message: "User created successfully",
+        });
+      } catch (error) {
+        socket.emit("userCreationError", { error: error });
       }
     });
 

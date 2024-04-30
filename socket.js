@@ -9,6 +9,7 @@ module.exports = function (app) {
   });
 
   require("./socket_services/user")(io);
+  require("./socket_services/booking")(io);
 
   return server;
 };
