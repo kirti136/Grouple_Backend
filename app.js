@@ -20,6 +20,7 @@ app.use("/api/user", routes.userRouter);
 app.use("/api/booking", routes.bookingRouter);
 
 sequelize
+  // .sync()
   .authenticate()
   .then(() => {
     console.log("Database connected.");
